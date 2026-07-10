@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+Here's the full updated home.html with light mode completely removed:
+html<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Refinement</title>
-  <link rel="manifest" href="manifest.json">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -64,7 +64,6 @@
       border-radius: 20px;
       padding: 1.5rem;
       transform-origin: top center;
-      transition: transform 0.4s ease, opacity 0.4s ease;
     }
 
     .hero-card.flip-out {
@@ -92,14 +91,6 @@
       text-transform: uppercase;
       color: rgba(255,255,255,0.7);
       margin-bottom: 0.5rem;
-    }
-
-    .hero-quote {
-      font-size: 15px;
-      font-style: italic;
-      color: rgba(255,255,255,0.85);
-      margin-bottom: 1.25rem;
-      line-height: 1.5;
     }
 
     .hero-streak {
@@ -298,65 +289,6 @@
 
     .urge-btn:active { opacity: 0.85; }
 
-    .theme-toggle {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-      cursor: pointer;
-    }
-
-    .theme-toggle span {
-      font-size: 13px;
-      color: #888;
-    }
-
-    .toggle-switch {
-      width: 40px;
-      height: 22px;
-      background: #2a2a2a;
-      border-radius: 11px;
-      position: relative;
-      transition: background 0.3s;
-    }
-
-    .toggle-switch.on { background: #6C5CE7; }
-
-    .toggle-knob {
-      width: 18px;
-      height: 18px;
-      background: white;
-      border-radius: 50%;
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      transition: left 0.3s;
-    }
-
-    .toggle-switch.on .toggle-knob { left: 20px; }
-
-    body.light {
-      background: #f5f5f5;
-      color: #111;
-    }
-
-    body.light .habit-card,
-    body.light .stat-tile,
-    body.light .checkin-card,
-    body.light .quote-card {
-      background: white;
-      border-color: #e0e0e0;
-    }
-
-    body.light .header-left .logo { color: #111; }
-    body.light .add-btn { background: white; border-color: #e0e0e0; color: #111; }
-    body.light .bottom-nav { background: white; border-color: #e0e0e0; }
-    body.light .nav-item { color: #aaa; }
-    body.light .nav-item.active { color: #6C5CE7; }
-    body.light .habit-streak-badge { background: #f0f0f0; }
-    body.light .stat-number { color: #111; }
-    body.light .interrupt-btn { background: rgba(0,0,0,0.15); }
-
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -391,18 +323,10 @@
         <div class="date" id="dateDisplay"></div>
         <div class="logo">Refinement</div>
       </div>
-      <div style="display:flex; align-items:center; gap:0.75rem;">
-        <div class="theme-toggle" onclick="toggleTheme()">
-          <span id="themeLabel">🌙</span>
-          <div class="toggle-switch" id="themeSwitch">
-            <div class="toggle-knob"></div>
-          </div>
-        </div>
-        <button class="add-btn" onclick="window.location.href='index.html'">+</button>
-      </div>
+      <button class="add-btn" onclick="window.location.href='index.html'">+</button>
     </div>
 
-    <div class="quote-card" id="quoteCard">
+    <div class="quote-card">
       <div class="quote-text" id="quoteText"></div>
       <div class="quote-author" id="quoteAuthor"></div>
     </div>
@@ -468,29 +392,11 @@
   </div>
 
   <script>
-    // Theme
-    var isLight = localStorage.getItem('lightMode') === 'true';
-    if (isLight) {
-      document.body.classList.add('light');
-      document.getElementById('themeSwitch').classList.add('on');
-      document.getElementById('themeLabel').textContent = '☀️';
-    }
-
-    function toggleTheme() {
-      isLight = !isLight;
-      localStorage.setItem('lightMode', isLight);
-      document.body.classList.toggle('light', isLight);
-      document.getElementById('themeSwitch').classList.toggle('on', isLight);
-      document.getElementById('themeLabel').textContent = isLight ? '☀️' : '🌙';
-    }
-
-    // Date
     var today = new Date();
     document.getElementById('dateDisplay').textContent = today.toLocaleDateString('en-US', {
       weekday: 'short', month: 'short', day: 'numeric'
     }).toUpperCase();
 
-    // Quotes
     var quotes = [
       { text: "Discipline is choosing between what you want now and what you want most.", author: "Abraham Lincoln" },
       { text: "You will never always be motivated. You have to learn to be disciplined.", author: "Unknown" },
@@ -509,14 +415,12 @@
     document.getElementById('quoteText').textContent = '"' + quote.text + '"';
     document.getElementById('quoteAuthor').textContent = '— ' + quote.author;
 
-    // Habits
     var habits = JSON.parse(localStorage.getItem('habits') || '[]');
     var urgesOvercome = parseInt(localStorage.getItem('urgesOvercome') || '0');
     var list = document.getElementById('habitList');
 
     document.getElementById('urgesOvercome').textContent = urgesOvercome;
 
-    // Today's urges beaten
     var todayStr = today.toLocaleDateString();
     var urgeLog = JSON.parse(localStorage.getItem('urgeLog') || '[]');
     var todayWins = urgeLog.filter(function(u) {
@@ -526,7 +430,6 @@
     }).length;
     document.getElementById('todayUrges').textContent = todayWins;
 
-    // Auto increment streaks
     if (habits.length > 0) {
       var changed = false;
       habits.forEach(function(habit, index) {
@@ -542,13 +445,11 @@
       if (changed) localStorage.setItem('habits', JSON.stringify(habits));
     }
 
-    // Hero card with flip animation
     if (habits.length > 0) {
       var heroIndex = 0;
       var heroCard = document.getElementById('heroCard');
       var dotsContainer = document.getElementById('heroDots');
 
-      // Build dots
       habits.forEach(function(h, i) {
         var dot = document.createElement('div');
         dot.className = 'hero-dot' + (i === 0 ? ' active' : '');
