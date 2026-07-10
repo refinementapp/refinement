@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Refinement — Check In</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #0f0f0f;
+      color: white;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 390px;
+      padding: 2rem;
+    }
+
+    .back {
+      color: #888;
+      font-size: 14px;
+      cursor: pointer;
+      margin-bottom: 2rem;
+      display: inline-block;
+    }
+
+    .step {
+      font-size: 12px;
+      color: #6C5CE7;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 2rem;
+    }
+
+    .habit-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .habit-name {
+      font-size: 16px;
+      font-weight: 700;
+      text-transform: capitalize;
+      margin-bottom: 1rem;
+    }
+
+    .toggle-row {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      padding: 0.75rem;
+      border-radius: 10px;
+      border: 1px solid #2a2a2a;
+      background: transparent;
+      color: #888;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .toggle-btn.clean {
+      background: #1D9E75;
+      border-color: #1D9E75;
+      color: white;
+    }
+
+    .toggle-btn.slipped {
+      background: #c0392b;
+      border-color: #c0392b;
+      color: white;
+    }
+
+    .reflection-section {
+      margin-top: 2rem;
+    }
+
+    .reflection-label {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 0.75rem;
+    }
+
+    textarea {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 1rem;
+      color: white;
+      font-size: 15px;
+      outline: none;
+      resize: none;
+      height: 120px;
+      font-family: system-ui, sans-serif;
+      margin-bottom: 1.5rem;
+    }
+
+    textarea::placeholder {
+      color: #555;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: #6C5CE7;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 1rem;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-primary:active {
+      opacity: 0.85;
+    }
+
+    .error {
+      color: #ff6b6b;
+      font-size: 13px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <span class="back" onclick="window.location.href='home.html'">← Back</span>
+
+    <div class="step">Daily Check-in</div>
+    <h2>How did today go?</h2>
+    <div class="subtitle">Mark each habit and leave a quick reflection.</div>
+
+    <div id="habitList"></div>
+
+    <div class="reflection-section">
+      <div class="reflection-label">Quick reflection — what was today like? (optional)</div>
+      <textarea id="reflection" placeholder="e.g. Had a rough evening but caught myself before giving in. Boredom was the trigger again."></textarea>
+    </div>
+
+    <div class="error" id="errorMsg">Please mark every habit as clean or slipped.</div>
+    <button class="btn-primary" onclick="saveCheckin()">Save Check-in →</button>
+  </div>
+
+  <script>
+    const habits = JSON.parse(localStorage.getItem('habits') || '[]');
+    const list = document.getElementById('habitList');
+    const outcomes = {};
+
+    habits.forEach((habit, index) => {
+      outcomes[index] = null;
+      list.innerHTML += `
+        <div class="habit-card">
+          <div class="habit-name">${habit.name}</div>
+          <div class="toggle-row">
+            <button class="toggle-btn" id="clean-${index}" onclick="setOutcome(${index}, 'clean')">
+              ✓ Stayed clean
+            </button>
+            <button class="toggle-btn" id="slipped-${index}" onclick="setOutcome(${index}, 'slipped')">
+              ✗ Slipped
+            </button>
+          </div>
+        </div>
+      `;
+    });
+
+    function setOutcome(index, result) {
+      outcomes[index] = result;
+      const cleanBtn = document.getElementById(`clean-${index}`);
+      const slippedBtn = document.getElementById(`slipped-${index}`);
+
+      cleanBtn.className = 'toggle-btn';
+      slippedBtn.className = 'toggle-btn';
+
+      if (result === 'clean') {
+        cleanBtn.classList.add('clean');
+      } else {
+        slippedBtn.classList.add('slipped');
+      }
+    }
+
+    function saveCheckin() {
+      const error = document.getElementById('errorMsg');
+      const allMarked = habits.every((_, i) => outcomes[i] !== null);
+
+      if (!allMarked) {
+        error.style.display = 'block';
+        return;
+      }
+
+      error.style.display = 'none';
+
+      const updatedHabits = [...habits];
+      habits.forEach((_, index) => {
+        const today = new Date().toLocaleDateString();
+
+if (outcomes[index] === 'clean') {
+  if (updatedHabits[index].lastUpdated !== today) {
+    updatedHabits[index].streak += 1;
+    updatedHabits[index].lastUpdated = today;
+  }
+} else {
+  updatedHabits[index].streak = 0;
+  updatedHabits[index].lastUpdated = null;
+}
+      });
+
+      localStorage.setItem('habits', JSON.stringify(updatedHabits));
+
+      const reflection = document.getElementById('reflection').value.trim();
+      if (reflection) {
+        const log = JSON.parse(localStorage.getItem('reflections') || '[]');
+        log.push({ date: new Date().toLocaleDateString(), text: reflection });
+        localStorage.setItem('reflections', JSON.stringify(log));
+      }
+
+      window.location.href = 'home.html';
+    }
+  </script>
+</body>
+</html>

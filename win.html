@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Refinement — Win</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: #0f0f0f;
+      color: white;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 390px;
+      padding: 2rem;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .icon {
+      font-size: 72px;
+      margin-bottom: 1.5rem;
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    h2 { font-size: 26px; font-weight: 800; margin-bottom: 0.75rem; }
+
+    .subtitle {
+      font-size: 15px;
+      color: #888;
+      margin-bottom: 0.5rem;
+      line-height: 1.6;
+    }
+
+    .streak-display {
+      background: #1a1a1a;
+      border: 1px solid #6C5CE7;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .streak-label {
+      font-size: 12px;
+      color: #6C5CE7;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .streak-number {
+      font-size: 48px;
+      font-weight: 800;
+      color: #6C5CE7;
+      animation: countUp 0.5s ease;
+    }
+
+    @keyframes countUp {
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .streak-unit { font-size: 14px; color: #888; margin-top: 0.25rem; }
+    .habit-name { font-size: 14px; color: #555; margin-top: 0.5rem; text-transform: capitalize; }
+
+    .btn-primary {
+      width: 100%;
+      background: #6C5CE7;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 1rem;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 0.75rem;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      background: transparent;
+      color: #888;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 1rem;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-primary:active, .btn-secondary:active { opacity: 0.85; }
+
+    .message {
+      font-size: 13px;
+      color: #555;
+      margin-top: 1.5rem;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confetti"></canvas>
+
+  <div class="container">
+    <div class="icon">🏆</div>
+    <h2>You overcame it.</h2>
+    <div class="subtitle">That wasn't easy. You paused, you thought it through, and you chose better.</div>
+
+    <div class="streak-display">
+      <div class="streak-label">Current streak</div>
+      <div class="streak-number" id="streakNumber">0</div>
+      <div class="streak-unit">days clean</div>
+      <div class="habit-name" id="habitName"></div>
+    </div>
+
+    <button class="btn-primary" onclick="window.location.href='home.html'">Back to home →</button>
+    <button class="btn-secondary" onclick="window.location.href='checkin.html'">Do daily check-in</button>
+
+    <div class="message" id="motivationMsg"></div>
+  </div>
+
+  <script>
+    var habits = JSON.parse(localStorage.getItem('habits') || '[]');
+    var activeIndex = parseInt(localStorage.getItem('activeHabit') || '0');
+    var habit = habits[activeIndex];
+
+    if (habit) {
+      document.getElementById('streakNumber').textContent = habit.streak;
+      document.getElementById('habitName').textContent = habit.name;
+
+      var messages = [
+        "Every time you say no, it gets a little easier.",
+        "You're building something real right now.",
+        "One moment at a time. Keep going.",
+        "The version of you that gave in doesn't exist today.",
+        "This is what discipline actually looks like."
+      ];
+
+      var msg = messages[Math.floor(Math.random() * messages.length)];
+      document.getElementById('motivationMsg').textContent = '"' + msg + '"';
+
+      var milestonedays = [7, 30, 90];
+      if (milestonedays.indexOf(habit.streak) !== -1) {
+        setTimeout(function() {
+          window.location.href = 'milestone.html';
+        }, 1500);
+      }
+    }
+
+    // Confetti
+    var canvas = document.getElementById('confetti');
+    var ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    var pieces = [];
+    for (var i = 0; i < 60; i++) {
+      pieces.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        w: Math.random() * 10 + 5,
+        h: Math.random() * 6 + 4,
+        color: ['#6C5CE7','#a29bfe','#1D9E75','#ffffff','#fdcb6e'][Math.floor(Math.random() * 5)],
+        speed: Math.random() * 3 + 1,
+        angle: Math.random() * 360,
+        spin: Math.random() * 4 - 2
+      });
+    }
+
+    function drawConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pieces.forEach(function(p) {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.angle * Math.PI / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        ctx.restore();
+        p.y += p.speed;
+        p.angle += p.spin;
+        if (p.y > canvas.height) {
+          p.y = -10;
+          p.x = Math.random() * canvas.width;
+        }
+      });
+      requestAnimationFrame(drawConfetti);
+    }
+
+    drawConfetti();
+  </script>
+</body>
+</html>

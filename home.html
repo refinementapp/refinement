@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Refinement</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: #0f0f0f;
+      color: white;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    .container { width: 100%; max-width: 390px; padding: 2rem 1.25rem; }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .header-left .date {
+      font-size: 12px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .header-left .logo {
+      font-size: 26px;
+      font-weight: 800;
+      color: white;
+    }
+
+    .add-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-wrapper {
+      perspective: 1000px;
+      margin-bottom: 1rem;
+    }
+
+    .hero-card {
+      background: #6C5CE7;
+      border-radius: 20px;
+      padding: 1.5rem;
+      transform-origin: top center;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+
+    .hero-card.flip-out {
+      animation: flipOut 0.3s ease forwards;
+    }
+
+    .hero-card.flip-in {
+      animation: flipIn 0.3s ease forwards;
+    }
+
+    @keyframes flipOut {
+      0% { transform: rotateX(0deg); opacity: 1; }
+      100% { transform: rotateX(-90deg); opacity: 0; }
+    }
+
+    @keyframes flipIn {
+      0% { transform: rotateX(90deg); opacity: 0; }
+      100% { transform: rotateX(0deg); opacity: 1; }
+    }
+
+    .hero-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-quote {
+      font-size: 15px;
+      font-style: italic;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 1.25rem;
+      line-height: 1.5;
+    }
+
+    .hero-streak {
+      font-size: 42px;
+      font-weight: 800;
+      color: white;
+      line-height: 1;
+    }
+
+    .hero-streak-label {
+      font-size: 13px;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 1.25rem;
+    }
+
+    .hero-dots {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 1rem;
+    }
+
+    .hero-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transition: all 0.3s;
+    }
+
+    .hero-dot.active {
+      background: white;
+      width: 18px;
+      border-radius: 3px;
+    }
+
+    .interrupt-btn {
+      width: 100%;
+      background: rgba(0,0,0,0.25);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 0.85rem;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .interrupt-btn:active { opacity: 0.85; }
+
+    .quote-card {
+      background: #1a1a1a;
+      border-left: 3px solid #6C5CE7;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .quote-text {
+      font-size: 14px;
+      color: #ccc;
+      font-style: italic;
+      line-height: 1.6;
+    }
+
+    .quote-author {
+      font-size: 12px;
+      color: #555;
+      margin-top: 0.5rem;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .stat-tile {
+      flex: 1;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 14px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .stat-icon { font-size: 20px; margin-bottom: 0.25rem; }
+    .stat-number { font-size: 22px; font-weight: 800; color: white; }
+    .stat-label { font-size: 11px; color: #666; margin-top: 0.25rem; }
+
+    .checkin-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .checkin-label {
+      font-size: 11px;
+      color: #6C5CE7;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+
+    .checkin-title { font-size: 16px; font-weight: 700; }
+    .checkin-sub { font-size: 12px; color: #666; margin-top: 0.25rem; }
+
+    .checkin-btn {
+      background: #6C5CE7;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 0.6rem 1rem;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #888;
+    }
+
+    .add-habit-link {
+      font-size: 13px;
+      color: #6C5CE7;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .habit-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .habit-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .habit-breaking {
+      font-size: 10px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .habit-streak-badge {
+      background: #2a2a2a;
+      color: #6C5CE7;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .habit-name {
+      font-size: 20px;
+      font-weight: 800;
+      text-transform: capitalize;
+      margin-bottom: 0.75rem;
+    }
+
+    .urge-btn {
+      width: 100%;
+      background: #6C5CE7;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 0.7rem;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .urge-btn:active { opacity: 0.85; }
+
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      cursor: pointer;
+    }
+
+    .theme-toggle span {
+      font-size: 13px;
+      color: #888;
+    }
+
+    .toggle-switch {
+      width: 40px;
+      height: 22px;
+      background: #2a2a2a;
+      border-radius: 11px;
+      position: relative;
+      transition: background 0.3s;
+    }
+
+    .toggle-switch.on { background: #6C5CE7; }
+
+    .toggle-knob {
+      width: 18px;
+      height: 18px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: left 0.3s;
+    }
+
+    .toggle-switch.on .toggle-knob { left: 20px; }
+
+    body.light {
+      background: #f5f5f5;
+      color: #111;
+    }
+
+    body.light .habit-card,
+    body.light .stat-tile,
+    body.light .checkin-card,
+    body.light .quote-card {
+      background: white;
+      border-color: #e0e0e0;
+    }
+
+    body.light .header-left .logo { color: #111; }
+    body.light .add-btn { background: white; border-color: #e0e0e0; color: #111; }
+    body.light .bottom-nav { background: white; border-color: #e0e0e0; }
+    body.light .nav-item { color: #aaa; }
+    body.light .nav-item.active { color: #6C5CE7; }
+    body.light .habit-streak-badge { background: #f0f0f0; }
+    body.light .stat-number { color: #111; }
+    body.light .interrupt-btn { background: rgba(0,0,0,0.15); }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #111;
+      border-top: 1px solid #2a2a2a;
+      display: flex;
+      justify-content: space-around;
+      padding: 0.75rem 0 1rem;
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      color: #666;
+      font-size: 11px;
+    }
+
+    .nav-item.active { color: #6C5CE7; }
+    .nav-icon { font-size: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-left">
+        <div class="date" id="dateDisplay"></div>
+        <div class="logo">Refinement</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:0.75rem;">
+        <div class="theme-toggle" onclick="toggleTheme()">
+          <span id="themeLabel">🌙</span>
+          <div class="toggle-switch" id="themeSwitch">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+        <button class="add-btn" onclick="window.location.href='index.html'">+</button>
+      </div>
+    </div>
+
+    <div class="quote-card" id="quoteCard">
+      <div class="quote-text" id="quoteText"></div>
+      <div class="quote-author" id="quoteAuthor"></div>
+    </div>
+
+    <div class="hero-wrapper">
+      <div class="hero-card" id="heroCard">
+        <div class="hero-label">When the urge comes</div>
+        <div class="hero-streak" id="heroStreak">0</div>
+        <div class="hero-streak-label" id="heroStreakLabel">days clean</div>
+        <div class="hero-dots" id="heroDots"></div>
+        <button class="interrupt-btn" id="heroUrgeBtn">👋 Interrupt an urge</button>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-tile">
+        <div class="stat-icon">🌱</div>
+        <div class="stat-number" id="totalDays">0</div>
+        <div class="stat-label">days held total</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-icon">👊</div>
+        <div class="stat-number" id="urgesOvercome">0</div>
+        <div class="stat-label">urges overcome</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-number" id="todayUrges">0</div>
+        <div class="stat-label">beaten today</div>
+      </div>
+    </div>
+
+    <div class="checkin-card">
+      <div>
+        <div class="checkin-label">Daily Check-in</div>
+        <div class="checkin-title">How did today land?</div>
+        <div class="checkin-sub">One minute. All your habits at once.</div>
+      </div>
+      <button class="checkin-btn" onclick="window.location.href='checkin.html'">Check in</button>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">Your Habits</div>
+      <div class="add-habit-link" onclick="window.location.href='index.html'">Add habit</div>
+    </div>
+
+    <div id="habitList"></div>
+  </div>
+
+  <div class="bottom-nav">
+    <div class="nav-item active">
+      <div class="nav-icon">🏠</div>
+      Today
+    </div>
+    <div class="nav-item" onclick="window.location.href='log.html'">
+      <div class="nav-icon">📓</div>
+      Log
+    </div>
+    <div class="nav-item" onclick="window.location.href='settings.html'">
+      <div class="nav-icon">⚙️</div>
+      Settings
+    </div>
+  </div>
+
+  <script>
+    // Theme
+    var isLight = localStorage.getItem('lightMode') === 'true';
+    if (isLight) {
+      document.body.classList.add('light');
+      document.getElementById('themeSwitch').classList.add('on');
+      document.getElementById('themeLabel').textContent = '☀️';
+    }
+
+    function toggleTheme() {
+      isLight = !isLight;
+      localStorage.setItem('lightMode', isLight);
+      document.body.classList.toggle('light', isLight);
+      document.getElementById('themeSwitch').classList.toggle('on', isLight);
+      document.getElementById('themeLabel').textContent = isLight ? '☀️' : '🌙';
+    }
+
+    // Date
+    var today = new Date();
+    document.getElementById('dateDisplay').textContent = today.toLocaleDateString('en-US', {
+      weekday: 'short', month: 'short', day: 'numeric'
+    }).toUpperCase();
+
+    // Quotes
+    var quotes = [
+      { text: "Discipline is choosing between what you want now and what you want most.", author: "Abraham Lincoln" },
+      { text: "You will never always be motivated. You have to learn to be disciplined.", author: "Unknown" },
+      { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+      { text: "Small daily improvements over time lead to stunning results.", author: "Robin Sharma" },
+      { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
+      { text: "An addiction is just something your mind uses to escape discomfort.", author: "Unknown" },
+      { text: "Every time you resist a temptation you become stronger.", author: "Unknown" },
+      { text: "The pain of discipline is far less than the pain of regret.", author: "Unknown" },
+      { text: "You are what you repeatedly do.", author: "Aristotle" },
+      { text: "Control your mind or it will control you.", author: "Unknown" }
+    ];
+
+    var dayIndex = today.getDate() % quotes.length;
+    var quote = quotes[dayIndex];
+    document.getElementById('quoteText').textContent = '"' + quote.text + '"';
+    document.getElementById('quoteAuthor').textContent = '— ' + quote.author;
+
+    // Habits
+    var habits = JSON.parse(localStorage.getItem('habits') || '[]');
+    var urgesOvercome = parseInt(localStorage.getItem('urgesOvercome') || '0');
+    var list = document.getElementById('habitList');
+
+    document.getElementById('urgesOvercome').textContent = urgesOvercome;
+
+    // Today's urges beaten
+    var todayStr = today.toLocaleDateString();
+    var urgeLog = JSON.parse(localStorage.getItem('urgeLog') || '[]');
+    var todayWins = urgeLog.filter(function(u) {
+      return u.outcome === 'overcame' && u.date === today.toLocaleDateString('en-US', {
+        weekday: 'short', month: 'short', day: 'numeric'
+      });
+    }).length;
+    document.getElementById('todayUrges').textContent = todayWins;
+
+    // Auto increment streaks
+    if (habits.length > 0) {
+      var changed = false;
+      habits.forEach(function(habit, index) {
+        var lastSlip = habits[index].lastSlipDate;
+        var lastUpdated = habits[index].lastUpdated;
+        var slippedToday = lastSlip === todayStr;
+        if (!slippedToday && lastUpdated !== todayStr) {
+          habits[index].streak += 1;
+          habits[index].lastUpdated = todayStr;
+          changed = true;
+        }
+      });
+      if (changed) localStorage.setItem('habits', JSON.stringify(habits));
+    }
+
+    // Hero card with flip animation
+    if (habits.length > 0) {
+      var heroIndex = 0;
+      var heroCard = document.getElementById('heroCard');
+      var dotsContainer = document.getElementById('heroDots');
+
+      // Build dots
+      habits.forEach(function(h, i) {
+        var dot = document.createElement('div');
+        dot.className = 'hero-dot' + (i === 0 ? ' active' : '');
+        dot.id = 'hdot-' + i;
+        dotsContainer.appendChild(dot);
+      });
+
+      function updateHero(index) {
+        document.getElementById('heroStreak').textContent = habits[index].streak;
+        document.getElementById('heroStreakLabel').textContent = 'days without ' + habits[index].name;
+        document.getElementById('heroUrgeBtn').onclick = function() {
+          localStorage.setItem('activeHabit', index);
+          window.location.href = 'urge.html';
+        };
+        habits.forEach(function(h, i) {
+          var dot = document.getElementById('hdot-' + i);
+          if (dot) dot.className = 'hero-dot' + (i === index ? ' active' : '');
+        });
+      }
+
+      function flipToNext() {
+        heroCard.classList.add('flip-out');
+        setTimeout(function() {
+          heroIndex = (heroIndex + 1) % habits.length;
+          updateHero(heroIndex);
+          heroCard.classList.remove('flip-out');
+          heroCard.classList.add('flip-in');
+          setTimeout(function() {
+            heroCard.classList.remove('flip-in');
+          }, 300);
+        }, 300);
+      }
+
+      updateHero(0);
+
+      if (habits.length > 1) {
+        setInterval(flipToNext, 3000);
+      }
+
+      var totalDays = habits.reduce(function(sum, h) { return sum + h.streak; }, 0);
+      document.getElementById('totalDays').textContent = totalDays;
+
+      habits.forEach(function(habit, index) {
+        var card = document.createElement('div');
+        card.className = 'habit-card';
+        card.innerHTML =
+          '<div class="habit-top">' +
+            '<div class="habit-breaking">Breaking</div>' +
+            '<div class="habit-streak-badge">🔥 ' + habit.streak + ' days</div>' +
+          '</div>' +
+          '<div class="habit-name">' + habit.name + '</div>' +
+          '<button class="urge-btn" onclick="goUrge(' + index + ')">👊 Interrupt an urge</button>';
+        list.appendChild(card);
+      });
+
+    } else {
+      list.innerHTML = '<div style="color:#555; text-align:center; margin-top:2rem;">No habits yet. Tap + to add one.</div>';
+    }
+
+    function goUrge(index) {
+      localStorage.setItem('activeHabit', index);
+      window.location.href = 'urge.html';
+    }
+  </script>
+</body>
+</html>

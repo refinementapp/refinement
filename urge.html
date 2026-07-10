@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Refinement — Urge</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: #0f0f0f;
+      color: white;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 390px;
+      padding: 2rem;
+    }
+
+    .back {
+      color: #888;
+      font-size: 14px;
+      cursor: pointer;
+      margin-bottom: 2rem;
+      display: inline-block;
+    }
+
+    .step {
+      font-size: 12px;
+      color: #6C5CE7;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 2rem;
+    }
+
+    textarea {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 1rem;
+      color: white;
+      font-size: 15px;
+      margin-bottom: 1rem;
+      outline: none;
+      resize: none;
+      height: 130px;
+      font-family: system-ui, sans-serif;
+    }
+
+    textarea::placeholder { color: #555; }
+
+    .error {
+      color: #ff6b6b;
+      font-size: 13px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .reason-box {
+      background: #1a1a1a;
+      border: 1px solid #6C5CE7;
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 2rem;
+      display: none;
+    }
+
+    .reason-label {
+      font-size: 11px;
+      color: #6C5CE7;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .reason-text {
+      font-size: 15px;
+      color: #ccc;
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: #6C5CE7;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 1rem;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 0.75rem;
+    }
+
+    .btn-green {
+      width: 100%;
+      background: #1D9E75;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 1rem;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 0.75rem;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      background: transparent;
+      color: #888;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 1rem;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-primary:active,
+    .btn-green:active,
+    .btn-secondary:active { opacity: 0.85; }
+
+    .outcome-section { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <span class="back" onclick="window.location.href='home.html'">← Back</span>
+
+    <div class="step">Step 1 — Pause</div>
+    <h2 id="habitTitle">Why do you want to give in?</h2>
+    <div class="subtitle">Write it out honestly. No one else will see this.</div>
+
+    <textarea id="urgeText" placeholder="What's going on right now? Why does this feel hard?"></textarea>
+    <div class="error" id="errorMsg">Write something first — even one word.</div>
+
+    <div class="reason-box" id="reasonBox">
+      <div class="reason-label">Your reason for quitting</div>
+      <div class="reason-text" id="reasonText"></div>
+    </div>
+
+    <button class="btn-primary" id="mainBtn" onclick="handleMain()">
+      Show my reason →
+    </button>
+
+    <div class="outcome-section" id="outcomeSection">
+      <button class="btn-green" onclick="logOutcome('overcame')">
+        ✓ I overcame it
+      </button>
+      <button class="btn-secondary" onclick="logOutcome('slipped')">
+        I slipped — reset streak
+      </button>
+    </div>
+  </div>
+
+  <script>
+    var habits = JSON.parse(localStorage.getItem('habits') || '[]');
+    var activeIndex = parseInt(localStorage.getItem('activeHabit') || '0');
+    var habit = habits[activeIndex];
+
+    if (habit) {
+      document.getElementById('habitTitle').textContent = 'Why do you want to give in to ' + habit.name + '?';
+      document.getElementById('reasonText').textContent = habit.reason;
+    }
+
+    var step = 1;
+
+    function handleMain() {
+      if (step === 1) {
+        var text = document.getElementById('urgeText').value.trim();
+        var error = document.getElementById('errorMsg');
+
+        if (!text) {
+          error.style.display = 'block';
+          return;
+        }
+
+        error.style.display = 'none';
+        document.getElementById('reasonBox').style.display = 'block';
+        document.getElementById('mainBtn').textContent = 'I read it — choose outcome';
+        step = 2;
+
+      } else if (step === 2) {
+        document.getElementById('mainBtn').style.display = 'none';
+        document.getElementById('outcomeSection').style.display = 'block';
+      }
+    }
+
+    function logOutcome(result) {
+      var habits = JSON.parse(localStorage.getItem('habits') || '[]');
+      var today = new Date().toLocaleDateString();
+
+      if (result === 'overcame') {
+        if (habits[activeIndex].lastUpdated !== today) {
+          habits[activeIndex].streak += 1;
+          habits[activeIndex].lastUpdated = today;
+        }
+        var urgesOvercome = parseInt(localStorage.getItem('urgesOvercome') || '0');
+        localStorage.setItem('urgesOvercome', urgesOvercome + 1);
+      } else {
+        habits[activeIndex].streak = 0;
+        habits[activeIndex].lastUpdated = today;
+        habits[activeIndex].lastSlipDate = today;
+      }
+
+      var urgeLog = JSON.parse(localStorage.getItem('urgeLog') || '[]');
+      urgeLog.push({
+        habit: habits[activeIndex].name,
+        outcome: result,
+        urgeText: document.getElementById('urgeText').value.trim(),
+        date: new Date().toLocaleDateString('en-US', {
+          weekday: 'short', month: 'short', day: 'numeric'
+        })
+      });
+
+      localStorage.setItem('urgeLog', JSON.stringify(urgeLog));
+      localStorage.setItem('habits', JSON.stringify(habits));
+
+      if (result === 'overcame') {
+        window.location.href = 'win.html';
+      } else {
+        window.location.href = 'home.html';
+      }
+    }
+  </script>
+</body>
+</html>

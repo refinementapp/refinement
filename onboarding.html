@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Refinement — Welcome</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: #0f0f0f;
+      color: white;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 390px;
+      padding: 2rem 1.25rem;
+      text-align: center;
+    }
+
+    .slide { display: none; }
+    .slide.active { display: block; }
+
+    .icon {
+      font-size: 72px;
+      margin-bottom: 1.5rem;
+    }
+
+    .slide-title {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .slide-title span { color: #6C5CE7; }
+
+    .slide-text {
+      font-size: 15px;
+      color: #888;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+
+    .dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 2rem;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #2a2a2a;
+      transition: all 0.3s;
+    }
+
+    .dot.active {
+      background: #6C5CE7;
+      width: 24px;
+      border-radius: 4px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: #6C5CE7;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 1rem;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 0.75rem;
+    }
+
+    .btn-skip {
+      width: 100%;
+      background: transparent;
+      color: #555;
+      border: none;
+      padding: 0.75rem;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .feature-list {
+      text-align: left;
+      margin-bottom: 2.5rem;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .feature-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .feature-text h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+    }
+
+    .feature-text p {
+      font-size: 13px;
+      color: #888;
+      line-height: 1.5;
+    }
+
+    .highlight-card {
+      background: #1a1a1a;
+      border: 1px solid #6C5CE7;
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 2.5rem;
+      text-align: left;
+    }
+
+    .highlight-label {
+      font-size: 11px;
+      color: #6C5CE7;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .highlight-text {
+      font-size: 15px;
+      color: #ccc;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Slide 1 -->
+    <div class="slide active" id="slide-0">
+      <div class="icon">🧠</div>
+      <div class="slide-title">Welcome to <span>Refinement</span></div>
+      <div class="slide-text">
+        The app that helps you break bad habits one moment at a time. No lectures, no shame, no religion. Just you and your discipline.
+      </div>
+      <div class="dots">
+        <div class="dot active" id="dot-0"></div>
+        <div class="dot" id="dot-1"></div>
+        <div class="dot" id="dot-2"></div>
+      </div>
+      <button class="btn-primary" onclick="nextSlide()">Let's go →</button>
+      <button class="btn-skip" onclick="finish()">Skip intro</button>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="slide" id="slide-1">
+      <div class="icon">⚡</div>
+      <div class="slide-title">How it <span>works</span></div>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-icon">🎯</div>
+          <div class="feature-text">
+            <h3>Set your habits</h3>
+            <p>Name the habits you want to break and write your personal reason for quitting.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🛑</div>
+          <div class="feature-text">
+            <h3>Interrupt the urge</h3>
+            <p>When you feel the urge, open the app. Write why you want to give in, then see your reason for quitting.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🔥</div>
+          <div class="feature-text">
+            <h3>Build your streak</h3>
+            <p>Every day clean adds to your streak. Watch yourself actually change over time.</p>
+          </div>
+        </div>
+      </div>
+      <div class="dots">
+        <div class="dot" id="dot-0"></div>
+        <div class="dot active" id="dot-1"></div>
+        <div class="dot" id="dot-2"></div>
+      </div>
+      <button class="btn-primary" onclick="nextSlide()">Got it →</button>
+      <button class="btn-skip" onclick="finish()">Skip intro</button>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="slide" id="slide-2">
+      <div class="icon">💪</div>
+      <div class="slide-title">The <span>secret</span> that works</div>
+      <div class="highlight-card">
+        <div class="highlight-label">The core idea</div>
+        <div class="highlight-text">
+          Forcing yourself to write out why you want to give in — even one sentence — is enough to break the autopilot. You don't need willpower. You just need 30 seconds of clarity.
+        </div>
+      </div>
+      <div class="slide-text">
+        Private by design. Nobody sees your habits, your urges, or your streaks. Just you.
+      </div>
+      <div class="dots">
+        <div class="dot" id="dot-0"></div>
+        <div class="dot" id="dot-1"></div>
+        <div class="dot active" id="dot-2"></div>
+      </div>
+      <button class="btn-primary" onclick="finish()">Start my journey →</button>
+    </div>
+
+  </div>
+
+  <script>
+    let current = 0;
+    const total = 3;
+
+    function nextSlide() {
+      document.getElementById(`slide-${current}`).classList.remove('active');
+      current++;
+      document.getElementById(`slide-${current}`).classList.add('active');
+      updateDots();
+    }
+
+    function updateDots() {
+      for (let i = 0; i < total; i++) {
+        const dots = document.querySelectorAll(`#dot-${i}`);
+        dots.forEach(dot => {
+          dot.classList.toggle('active', i === current);
+        });
+      }
+    }
+
+    function finish() {
+  localStorage.setItem('onboarded', 'true');
+  window.location.href = 'index.html';
+}
+  </script>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Refinement — Settings</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: #0f0f0f;
+      color: white;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    .container { width: 100%; max-width: 390px; padding: 2rem 1.25rem; }
+
+    h1 { font-size: 26px; font-weight: 800; margin-bottom: 0.25rem; }
+    .subtitle { font-size: 14px; color: #888; margin-bottom: 2rem; }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .habit-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .habit-label {
+      font-size: 11px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.25rem;
+    }
+
+    .habit-name {
+      font-size: 18px;
+      font-weight: 700;
+      text-transform: capitalize;
+      margin-bottom: 0.25rem;
+    }
+
+    .habit-streak {
+      font-size: 13px;
+      color: #6C5CE7;
+      margin-bottom: 1rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      padding: 0.75rem;
+      color: white;
+      font-size: 15px;
+      margin-bottom: 0.75rem;
+      outline: none;
+      font-family: system-ui, sans-serif;
+    }
+
+    input[type="number"] { width: 100px; }
+
+    textarea {
+      resize: none;
+      height: 80px;
+    }
+
+    input::placeholder, textarea::placeholder { color: #555; }
+
+    .streak-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .streak-row label {
+      font-size: 13px;
+      color: #888;
+      white-space: nowrap;
+    }
+
+    .streak-row span {
+      font-size: 13px;
+      color: #555;
+    }
+
+    .save-btn {
+      width: 100%;
+      background: #6C5CE7;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 0.7rem;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 0.5rem;
+    }
+
+    .delete-btn {
+      width: 100%;
+      background: transparent;
+      color: #e74c3c;
+      border: 1px solid #e74c3c;
+      border-radius: 10px;
+      padding: 0.7rem;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .save-btn:active, .delete-btn:active { opacity: 0.85; }
+
+    .saved-msg {
+      color: #1D9E75;
+      font-size: 13px;
+      text-align: center;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .danger-section {
+      margin-top: 2rem;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 1.25rem;
+    }
+
+    .danger-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #e74c3c;
+      margin-bottom: 0.5rem;
+    }
+
+    .danger-sub {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 1rem;
+    }
+
+    .reset-btn {
+      width: 100%;
+      background: transparent;
+      color: #e74c3c;
+      border: 1px solid #e74c3c;
+      border-radius: 10px;
+      padding: 0.7rem;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .reset-btn:active { opacity: 0.85; }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #111;
+      border-top: 1px solid #2a2a2a;
+      display: flex;
+      justify-content: space-around;
+      padding: 0.75rem 0 1rem;
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      color: #666;
+      font-size: 11px;
+    }
+
+    .nav-item.active { color: #6C5CE7; }
+    .nav-icon { font-size: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Settings</h1>
+    <div class="subtitle">Edit your habits or reset your progress.</div>
+
+    <div class="section-title">Your Habits</div>
+    <div id="habitList"></div>
+
+    <div class="danger-section">
+      <div class="danger-title">Danger Zone</div>
+      <div class="danger-sub">This will delete all your habits, streaks and log history. This cannot be undone.</div>
+      <button class="reset-btn" onclick="resetAll()">Reset everything</button>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="window.location.href='home.html'">
+      <div class="nav-icon">🏠</div>
+      Today
+    </div>
+    <div class="nav-item" onclick="window.location.href='log.html'">
+      <div class="nav-icon">📓</div>
+      Log
+    </div>
+    <div class="nav-item active">
+      <div class="nav-icon">⚙️</div>
+      Settings
+    </div>
+  </div>
+
+  <script>
+    var habits = JSON.parse(localStorage.getItem('habits') || '[]');
+
+    function renderHabits() {
+      var list = document.getElementById('habitList');
+      list.innerHTML = '';
+
+      if (habits.length === 0) {
+        list.innerHTML = '<div style="color:#555; text-align:center; padding:2rem;">No habits yet.</div>';
+        return;
+      }
+
+      for (var i = 0; i < habits.length; i++) {
+        var habit = habits[i];
+        var card = document.createElement('div');
+        card.className = 'habit-card';
+        card.id = 'card-' + i;
+        card.innerHTML =
+          '<div class="habit-label">Habit ' + (i + 1) + '</div>' +
+          '<div class="habit-name">' + habit.name + '</div>' +
+          '<div class="habit-streak">🔥 ' + habit.streak + ' day streak — editing name/reason won\'t reset this</div>' +
+          '<input type="text" id="name-' + i + '" value="' + habit.name + '" placeholder="Habit name" />' +
+          '<textarea id="reason-' + i + '" placeholder="Your reason for quitting">' + habit.reason + '</textarea>' +
+          '<div class="streak-row">' +
+            '<label>Fix streak:</label>' +
+            '<input type="number" id="streak-' + i + '" value="' + habit.streak + '" min="0" />' +
+            '<span>days</span>' +
+          '</div>' +
+          '<button class="save-btn" onclick="saveHabit(' + i + ')">Save changes</button>' +
+          '<button class="delete-btn" onclick="deleteHabit(' + i + ')">Delete this habit</button>' +
+          '<div class="saved-msg" id="saved-' + i + '">✓ Saved</div>';
+        list.appendChild(card);
+      }
+    }
+
+    function saveHabit(index) {
+      var name = document.getElementById('name-' + index).value.trim();
+      var reason = document.getElementById('reason-' + index).value.trim();
+      var streakVal = parseInt(document.getElementById('streak-' + index).value);
+
+      if (!name || !reason) {
+        alert('Please fill in both the habit name and reason.');
+        return;
+      }
+
+      habits[index].name = name;
+      habits[index].reason = reason;
+
+      if (!isNaN(streakVal) && streakVal >= 0) {
+        habits[index].streak = streakVal;
+      }
+
+      localStorage.setItem('habits', JSON.stringify(habits));
+
+      var msg = document.getElementById('saved-' + index);
+      msg.style.display = 'block';
+      setTimeout(function() {
+        msg.style.display = 'none';
+        renderHabits();
+      }, 1500);
+    }
+
+    function deleteHabit(index) {
+      if (!confirm('Delete "' + habits[index].name + '"? Your streak will be lost.')) return;
+      habits.splice(index, 1);
+      localStorage.setItem('habits', JSON.stringify(habits));
+      renderHabits();
+    }
+
+    function resetAll() {
+      if (!confirm('Are you sure? This deletes everything and cannot be undone.')) return;
+      localStorage.clear();
+      window.location.href = 'index.html';
+    }
+
+    renderHabits();
+  </script>
+</body>
+</html>

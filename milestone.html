@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Refinement — Milestone</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: #0f0f0f;
+      color: white;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 390px;
+      padding: 2rem 1.25rem;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .confetti {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .badge {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6C5CE7, #a29bfe);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 56px;
+      box-shadow: 0 0 40px rgba(108,92,231,0.5);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 40px rgba(108,92,231,0.5); }
+      50% { box-shadow: 0 0 70px rgba(108,92,231,0.8); }
+    }
+
+    .milestone-label {
+      font-size: 12px;
+      color: #6C5CE7;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      line-height: 1.1;
+    }
+
+    h1 span { color: #6C5CE7; }
+
+    .habit-name {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 2rem;
+      text-transform: capitalize;
+    }
+
+    .message-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 2rem;
+      text-align: left;
+    }
+
+    .message-text {
+      font-size: 15px;
+      color: #ccc;
+      line-height: 1.7;
+      font-style: italic;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-tile {
+      flex: 1;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 14px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 24px;
+      font-weight: 800;
+      color: #6C5CE7;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #666;
+      margin-top: 0.25rem;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: #6C5CE7;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 1rem;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 0.75rem;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      background: transparent;
+      color: #888;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 1rem;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <canvas class="confetti" id="confetti"></canvas>
+
+  <div class="container">
+    <div class="badge" id="badge">🏆</div>
+    <div class="milestone-label">Milestone Unlocked</div>
+    <h1 id="milestoneTitle"><span id="days">0</span> Days</h1>
+    <div class="habit-name" id="habitName"></div>
+
+    <div class="message-card">
+      <div class="message-text" id="milestoneMessage"></div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-tile">
+        <div class="stat-number" id="streakStat">0</div>
+        <div class="stat-label">day streak</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-number" id="urgesStat">0</div>
+        <div class="stat-label">urges overcome</div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="window.location.href='home.html'">
+      Keep going →
+    </button>
+    <button class="btn-secondary" onclick="share()">
+      Share this milestone
+    </button>
+  </div>
+
+  <script>
+    const habits = JSON.parse(localStorage.getItem('habits') || '[]');
+    const activeIndex = parseInt(localStorage.getItem('activeHabit') || '0');
+    const habit = habits[activeIndex];
+    const urgesOvercome = parseInt(localStorage.getItem('urgesOvercome') || '0');
+
+    const milestones = {
+      7: {
+        badge: '⚡',
+        message: "One week. That's not nothing — that's proof you can actually do this. Most people quit in the first 48 hours. You didn't."
+      },
+      30: {
+        badge: '🔥',
+        message: "30 days. You've rewired something real in your brain. The urges are weaker now because you've proven to yourself you don't have to give in."
+      },
+      90: {
+        badge: '👑',
+        message: "90 days. This is the milestone most people only dream about. You've built a new identity — not someone who's trying to quit, but someone who already has."
+      }
+    };
+
+    if (habit) {
+      const streak = habit.streak;
+      const milestone = milestones[streak] || milestones[7];
+
+      document.getElementById('badge').textContent = milestone.badge;
+      document.getElementById('days').textContent = streak;
+      document.getElementById('habitName').textContent = `without ${habit.name}`;
+      document.getElementById('milestoneMessage').textContent = milestone.message;
+      document.getElementById('streakStat').textContent = streak;
+      document.getElementById('urgesStat').textContent = urgesOvercome;
+    }
+
+    function share() {
+      const streak = habit ? habit.streak : 0;
+      const name = habit ? habit.name : 'my habit';
+      if (navigator.share) {
+        navigator.share({
+          title: 'Refinement',
+          text: `I just hit ${streak} days without ${name} using Refinement. Building discipline one day at a time. 💪`,
+        });
+      } else {
+        alert('Copy this: I just hit ' + streak + ' days without ' + name + ' using Refinement. 💪');
+      }
+    }
+
+    // Confetti animation
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const pieces = Array.from({length: 80}, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      w: Math.random() * 10 + 5,
+      h: Math.random() * 6 + 4,
+      color: ['#6C5CE7','#a29bfe','#1D9E75','#ffffff','#fdcb6e'][Math.floor(Math.random() * 5)],
+      speed: Math.random() * 3 + 1,
+      angle: Math.random() * 360,
+      spin: Math.random() * 4 - 2
+    }));
+
+    function drawConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pieces.forEach(p => {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.angle * Math.PI / 180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        ctx.restore();
+        p.y += p.speed;
+        p.angle += p.spin;
+        if (p.y > canvas.height) {
+          p.y = -10;
+          p.x = Math.random() * canvas.width;
+        }
+      });
+      requestAnimationFrame(drawConfetti);
+    }
+
+    drawConfetti();
+  </script>
+</body>
+</html>

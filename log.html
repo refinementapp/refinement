@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Refinement — Log</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: #0f0f0f;
+      color: white;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    .container { width: 100%; max-width: 390px; padding: 2rem 1.25rem; }
+
+    h1 { font-size: 26px; font-weight: 800; margin-bottom: 0.25rem; }
+    .subtitle { font-size: 14px; color: #888; margin-bottom: 2rem; }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .log-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .log-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .log-habit {
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: capitalize;
+    }
+
+    .log-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .badge-overcame {
+      background: rgba(29,158,117,0.2);
+      color: #1D9E75;
+    }
+
+    .badge-slipped {
+      background: rgba(192,57,43,0.2);
+      color: #e74c3c;
+    }
+
+    .log-date { font-size: 12px; color: #555; margin-bottom: 0.5rem; }
+
+    .log-reason {
+      font-size: 13px;
+      color: #888;
+      font-style: italic;
+      line-height: 1.5;
+      border-left: 2px solid #2a2a2a;
+      padding-left: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    .reflection-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .reflection-date { font-size: 12px; color: #555; margin-bottom: 0.5rem; }
+    .reflection-text { font-size: 14px; color: #ccc; line-height: 1.6; }
+
+    .empty {
+      color: #555;
+      font-size: 14px;
+      text-align: center;
+      margin-top: 1rem;
+      padding: 2rem;
+      background: #1a1a1a;
+      border-radius: 16px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #111;
+      border-top: 1px solid #2a2a2a;
+      display: flex;
+      justify-content: space-around;
+      padding: 0.75rem 0 1rem;
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      color: #666;
+      font-size: 11px;
+    }
+
+    .nav-item.active { color: #6C5CE7; }
+    .nav-icon { font-size: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Log</h1>
+    <div class="subtitle">Your urges, outcomes and reflections.</div>
+
+    <div class="section-title">Urge History</div>
+    <div id="urgeLog"></div>
+
+    <div class="section-title">Daily Reflections</div>
+    <div id="reflectionLog"></div>
+  </div>
+
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="window.location.href='home.html'">
+      <div class="nav-icon">🏠</div>
+      Today
+    </div>
+    <div class="nav-item active">
+      <div class="nav-icon">📓</div>
+      Log
+    </div>
+    <div class="nav-item" onclick="window.location.href='settings.html'">
+      <div class="nav-icon">⚙️</div>
+      Settings
+    </div>
+  </div>
+
+  <script>
+    const urgeLog = JSON.parse(localStorage.getItem('urgeLog') || '[]');
+    const reflections = JSON.parse(localStorage.getItem('reflections') || '[]');
+    const urgeLogEl = document.getElementById('urgeLog');
+    const reflectionLogEl = document.getElementById('reflectionLog');
+
+    if (urgeLog.length === 0) {
+      urgeLogEl.innerHTML = '<div class="empty">No urges logged yet. When you interrupt an urge it will show up here.</div>';
+    } else {
+      [...urgeLog].reverse().forEach(entry => {
+        const badgeClass = entry.outcome === 'overcame' ? 'badge-overcame' : 'badge-slipped';
+        const badgeText = entry.outcome === 'overcame' ? '✓ Overcame' : '✗ Slipped';
+        urgeLogEl.innerHTML += `
+          <div class="log-card">
+            <div class="log-top">
+              <div class="log-habit">${entry.habit}</div>
+              <div class="log-badge ${badgeClass}">${badgeText}</div>
+            </div>
+            <div class="log-date">${entry.date}</div>
+            ${entry.urgeText ? `<div class="log-reason">"${entry.urgeText}"</div>` : ''}
+          </div>
+        `;
+      });
+    }
+
+    if (reflections.length === 0) {
+      reflectionLogEl.innerHTML = '<div class="empty">No reflections yet. Add one during your daily check-in.</div>';
+    } else {
+      [...reflections].reverse().forEach(entry => {
+        reflectionLogEl.innerHTML += `
+          <div class="reflection-card">
+            <div class="reflection-date">${entry.date}</div>
+            <div class="reflection-text">${entry.text}</div>
+          </div>
+        `;
+      });
+    }
+  </script>
+</body>
+</html>
