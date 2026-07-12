@@ -24,17 +24,9 @@
       text-align: center;
     }
 
-    .icon {
-      font-size: 72px;
-      margin-bottom: 1.5rem;
-    }
+    .icon { font-size: 72px; margin-bottom: 1.5rem; }
 
-    h2 {
-      font-size: 26px;
-      font-weight: 800;
-      margin-bottom: 0.75rem;
-    }
-
+    h2 { font-size: 26px; font-weight: 800; margin-bottom: 0.75rem; }
     h2 span { color: #6C5CE7; }
 
     .subtitle {
@@ -63,7 +55,6 @@
     }
 
     .benefit-item:last-child { margin-bottom: 0; }
-
     .benefit-icon { font-size: 20px; }
 
     .google-btn {
@@ -85,10 +76,7 @@
 
     .google-btn:active { opacity: 0.85; }
 
-    .google-icon {
-      width: 20px;
-      height: 20px;
-    }
+    .google-icon { width: 20px; height: 20px; }
 
     .skip-btn {
       width: 100%;
@@ -102,19 +90,8 @@
 
     .skip-btn:active { opacity: 0.85; }
 
-    .status {
-      font-size: 13px;
-      color: #6C5CE7;
-      margin-top: 1rem;
-      display: none;
-    }
-
-    .error {
-      font-size: 13px;
-      color: #ff6b6b;
-      margin-top: 1rem;
-      display: none;
-    }
+    .status { font-size: 13px; color: #6C5CE7; margin-top: 1rem; display: none; }
+    .error { font-size: 13px; color: #ff6b6b; margin-top: 1rem; display: none; }
   </style>
 </head>
 <body>
@@ -155,21 +132,19 @@
     </button>
 
     <button class="skip-btn" onclick="skipSignIn()">
-      Continue without signing in
+      I'll sign in later
     </button>
 
     <div class="status" id="status">Signing in...</div>
     <div class="error" id="error"></div>
   </div>
 
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="firebase.js"></script>
 
   <script>
-    // Check if already signed in
     auth.onAuthStateChanged(function(user) {
       if (user) {
         window.location.href = 'home.html';
@@ -185,7 +160,6 @@
       signInWithGoogle().then(function(result) {
         var user = result.user;
         var username = localStorage.getItem('username') || user.displayName || 'User';
-
         return saveUserData(user.uid, {
           username: username,
           email: user.email,
@@ -199,6 +173,7 @@
           return saveHabits(user.uid, habits);
         }
       }).then(function() {
+        localStorage.removeItem('skippedSignIn');
         window.location.href = 'home.html';
       }).catch(function(err) {
         status.style.display = 'none';
