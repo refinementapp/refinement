@@ -144,6 +144,33 @@
       color: #ccc;
       line-height: 1.6;
     }
+
+    .username-input {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 1rem;
+      color: white;
+      font-size: 15px;
+      margin-bottom: 1rem;
+      outline: none;
+      text-align: center;
+      font-family: system-ui, sans-serif;
+    }
+
+    .username-input:focus {
+      border-color: #6C5CE7;
+    }
+
+    .username-input::placeholder { color: #555; }
+
+    .error {
+      color: #ff6b6b;
+      font-size: 13px;
+      margin-bottom: 1rem;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -157,12 +184,13 @@
         The app that helps you break bad habits one moment at a time. No lectures, no shame, no religion. Just you and your discipline.
       </div>
       <div class="dots">
-        <div class="dot active" id="dot-0"></div>
-        <div class="dot" id="dot-1"></div>
-        <div class="dot" id="dot-2"></div>
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
       </div>
       <button class="btn-primary" onclick="nextSlide()">Let's go →</button>
-      <button class="btn-skip" onclick="finish()">Skip intro</button>
+      <button class="btn-skip" onclick="skipTo()">Skip intro</button>
     </div>
 
     <!-- Slide 2 -->
@@ -193,12 +221,13 @@
         </div>
       </div>
       <div class="dots">
-        <div class="dot" id="dot-0"></div>
-        <div class="dot active" id="dot-1"></div>
-        <div class="dot" id="dot-2"></div>
+        <div class="dot"></div>
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
       </div>
       <button class="btn-primary" onclick="nextSlide()">Got it →</button>
-      <button class="btn-skip" onclick="finish()">Skip intro</button>
+      <button class="btn-skip" onclick="skipTo()">Skip intro</button>
     </div>
 
     <!-- Slide 3 -->
@@ -215,9 +244,35 @@
         Private by design. Nobody sees your habits, your urges, or your streaks. Just you.
       </div>
       <div class="dots">
-        <div class="dot" id="dot-0"></div>
-        <div class="dot" id="dot-1"></div>
-        <div class="dot active" id="dot-2"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot active"></div>
+        <div class="dot"></div>
+      </div>
+      <button class="btn-primary" onclick="nextSlide()">Almost there →</button>
+      <button class="btn-skip" onclick="skipTo()">Skip intro</button>
+    </div>
+
+    <!-- Slide 4 — Username -->
+    <div class="slide" id="slide-3">
+      <div class="icon">👤</div>
+      <div class="slide-title">What should we <span>call you?</span></div>
+      <div class="slide-text">
+        This is how you'll appear in the community tab. Pick something you're comfortable with.
+      </div>
+      <input
+        type="text"
+        id="usernameInput"
+        class="username-input"
+        placeholder="Enter a username"
+        maxlength="20"
+      />
+      <div class="error" id="usernameError">Please enter a username to continue.</div>
+      <div class="dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot active"></div>
       </div>
       <button class="btn-primary" onclick="finish()">Start my journey →</button>
     </div>
@@ -225,29 +280,35 @@
   </div>
 
   <script>
-    let current = 0;
-    const total = 3;
+    var current = 0;
+    var total = 4;
 
     function nextSlide() {
-      document.getElementById(`slide-${current}`).classList.remove('active');
+      document.getElementById('slide-' + current).classList.remove('active');
       current++;
-      document.getElementById(`slide-${current}`).classList.add('active');
-      updateDots();
+      document.getElementById('slide-' + current).classList.add('active');
     }
 
-    function updateDots() {
-      for (let i = 0; i < total; i++) {
-        const dots = document.querySelectorAll(`#dot-${i}`);
-        dots.forEach(dot => {
-          dot.classList.toggle('active', i === current);
-        });
-      }
+    function skipTo() {
+      document.getElementById('slide-' + current).classList.remove('active');
+      current = 3;
+      document.getElementById('slide-3').classList.add('active');
     }
 
     function finish() {
-  localStorage.setItem('onboarded', 'true');
-  window.location.href = 'index.html';
-}
+      var val = document.getElementById('usernameInput').value.trim();
+      var error = document.getElementById('usernameError');
+
+      if (!val) {
+        error.style.display = 'block';
+        return;
+      }
+
+      error.style.display = 'none';
+      localStorage.setItem('username', val);
+      localStorage.setItem('onboarded', 'true');
+      window.location.href = 'index.html';
+    }
   </script>
 </body>
 </html>
