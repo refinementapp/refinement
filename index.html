@@ -109,10 +109,18 @@
       window.location.href = 'onboarding.html';
     }
 
+    // Generate username tag if not already set
+    if (localStorage.getItem('username') && !localStorage.getItem('usertag')) {
+      var tag = Math.floor(1000 + Math.random() * 9000);
+      var username = localStorage.getItem('username');
+      localStorage.setItem('usertag', tag);
+      localStorage.setItem('displayName', username + '#' + tag);
+    }
+
     function saveHabit() {
-      const name = document.getElementById('habitName').value.trim();
-      const reason = document.getElementById('habitReason').value.trim();
-      const error = document.getElementById('errorMsg');
+      var name = document.getElementById('habitName').value.trim();
+      var reason = document.getElementById('habitReason').value.trim();
+      var error = document.getElementById('errorMsg');
 
       if (!name || !reason) {
         error.style.display = 'block';
@@ -121,11 +129,11 @@
 
       error.style.display = 'none';
 
-      const habits = JSON.parse(localStorage.getItem('habits') || '[]');
-      habits.push({ name, reason, streak: 0, lastUpdated: null, lastSlipDate: null });
+      var habits = JSON.parse(localStorage.getItem('habits') || '[]');
+      habits.push({ name: name, reason: reason, streak: 0, lastUpdated: null, lastSlipDate: null });
       localStorage.setItem('habits', JSON.stringify(habits));
 
-      window.location.href = 'splash.html';
+      window.location.href = 'home.html';
     }
   </script>
 </body>
