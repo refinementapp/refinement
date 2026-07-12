@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Refinement — Sign In</title>
+  <title>Refinement — Settings</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -13,130 +13,322 @@
       font-family: system-ui, sans-serif;
       display: flex;
       justify-content: center;
-      align-items: center;
       min-height: 100vh;
+      padding-bottom: 80px;
     }
 
-    .container {
-      width: 100%;
-      max-width: 390px;
-      padding: 2rem 1.25rem;
-      text-align: center;
-    }
+    .container { width: 100%; max-width: 390px; padding: 2rem 1.25rem; }
 
-    .icon { font-size: 72px; margin-bottom: 1.5rem; }
+    h1 { font-size: 26px; font-weight: 800; margin-bottom: 0.25rem; }
+    .subtitle { font-size: 14px; color: #888; margin-bottom: 2rem; }
 
-    h2 { font-size: 26px; font-weight: 800; margin-bottom: 0.75rem; }
-    h2 span { color: #6C5CE7; }
-
-    .subtitle {
-      font-size: 15px;
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
       color: #888;
-      line-height: 1.6;
-      margin-bottom: 2.5rem;
+      margin-bottom: 0.75rem;
+      margin-top: 1.5rem;
     }
 
-    .benefits {
-      text-align: left;
+    .account-card {
       background: #1a1a1a;
       border: 1px solid #2a2a2a;
       border-radius: 16px;
       padding: 1.25rem;
-      margin-bottom: 2rem;
+      margin-bottom: 0.75rem;
     }
 
-    .benefit-item {
+    .account-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .account-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #6C5CE7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .account-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .account-name {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .account-email {
+      font-size: 13px;
+      color: #888;
+      margin-top: 0.25rem;
+    }
+
+    .habit-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .habit-label {
+      font-size: 11px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.25rem;
+    }
+
+    .habit-name {
+      font-size: 18px;
+      font-weight: 700;
+      text-transform: capitalize;
+      margin-bottom: 0.25rem;
+    }
+
+    .habit-streak {
+      font-size: 13px;
+      color: #6C5CE7;
+      margin-bottom: 1rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      padding: 0.75rem;
+      color: white;
+      font-size: 15px;
+      margin-bottom: 0.75rem;
+      outline: none;
+      font-family: system-ui, sans-serif;
+    }
+
+    input[type="number"] { width: 100px; }
+
+    textarea {
+      resize: none;
+      height: 80px;
+    }
+
+    input::placeholder, textarea::placeholder { color: #555; }
+
+    .streak-row {
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      margin-bottom: 1rem;
-      font-size: 14px;
-      color: #ccc;
+      margin-bottom: 0.75rem;
     }
 
-    .benefit-item:last-child { margin-bottom: 0; }
-    .benefit-icon { font-size: 20px; }
+    .streak-row label { font-size: 13px; color: #888; white-space: nowrap; }
+    .streak-row span { font-size: 13px; color: #555; }
+
+    .save-btn {
+      width: 100%;
+      background: #6C5CE7;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 0.7rem;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 0.5rem;
+    }
 
     .google-btn {
       width: 100%;
       background: white;
       color: #111;
       border: none;
-      border-radius: 12px;
-      padding: 1rem;
-      font-size: 15px;
+      border-radius: 10px;
+      padding: 0.7rem;
+      font-size: 14px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 0.75rem;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.5rem;
     }
 
-    .google-btn:active { opacity: 0.85; }
+    .google-icon { width: 18px; height: 18px; }
 
-    .google-icon { width: 20px; height: 20px; }
-
-    .skip-btn {
+    .signout-btn {
       width: 100%;
       background: transparent;
-      color: #555;
-      border: none;
-      padding: 0.75rem;
+      color: #e74c3c;
+      border: 1px solid #e74c3c;
+      border-radius: 10px;
+      padding: 0.7rem;
       font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 0.5rem;
+    }
+
+    .delete-btn {
+      width: 100%;
+      background: transparent;
+      color: #e74c3c;
+      border: 1px solid #e74c3c;
+      border-radius: 10px;
+      padding: 0.7rem;
+      font-size: 14px;
+      font-weight: 600;
       cursor: pointer;
     }
 
-    .skip-btn:active { opacity: 0.85; }
+    .save-btn:active,
+    .google-btn:active,
+    .signout-btn:active,
+    .delete-btn:active { opacity: 0.85; }
 
-    .status { font-size: 13px; color: #6C5CE7; margin-top: 1rem; display: none; }
-    .error { font-size: 13px; color: #ff6b6b; margin-top: 1rem; display: none; }
+    .saved-msg {
+      color: #1D9E75;
+      font-size: 13px;
+      text-align: center;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .danger-section {
+      margin-top: 2rem;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 1.25rem;
+    }
+
+    .danger-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #e74c3c;
+      margin-bottom: 0.5rem;
+    }
+
+    .danger-sub {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 1rem;
+    }
+
+    .reset-btn {
+      width: 100%;
+      background: transparent;
+      color: #e74c3c;
+      border: 1px solid #e74c3c;
+      border-radius: 10px;
+      padding: 0.7rem;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .reset-btn:active { opacity: 0.85; }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #111;
+      border-top: 1px solid #2a2a2a;
+      display: flex;
+      justify-content: space-around;
+      padding: 0.75rem 0 1rem;
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      color: #666;
+      font-size: 11px;
+    }
+
+    .nav-item.active { color: #6C5CE7; }
+    .nav-icon { font-size: 20px; }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="icon">🔐</div>
-    <h2>Save your <span>progress</span></h2>
-    <div class="subtitle">
-      Sign in with Google to save your habits and streaks across all your devices.
+    <h1>Settings</h1>
+    <div class="subtitle">Manage your account and habits.</div>
+
+    <div class="section-title">Account</div>
+    <div class="account-card" id="accountCard">
+      <div id="signedOutView">
+        <div style="font-size:14px; color:#888; margin-bottom:1rem;">
+          Sign in to save your data across devices and join accountability groups.
+        </div>
+        <button class="google-btn" onclick="handleSignIn()">
+          <svg class="google-icon" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Sign in with Google
+        </button>
+      </div>
+
+      <div id="signedInView" style="display:none;">
+        <div class="account-info">
+          <div class="account-avatar" id="avatarContainer">👤</div>
+          <div>
+            <div class="account-name" id="accountName">Loading...</div>
+            <div class="account-email" id="accountEmail"></div>
+          </div>
+        </div>
+        <button class="signout-btn" onclick="handleSignOut()">Sign out</button>
+      </div>
     </div>
 
-    <div class="benefits">
-      <div class="benefit-item">
-        <div class="benefit-icon">☁️</div>
-        Your streaks and habits saved to the cloud
-      </div>
-      <div class="benefit-item">
-        <div class="benefit-icon">📱</div>
-        Access your data on any device
-      </div>
-      <div class="benefit-item">
-        <div class="benefit-icon">👥</div>
-        Join and create accountability groups
-      </div>
-      <div class="benefit-item">
-        <div class="benefit-icon">🔒</div>
-        Your habits stay completely private
-      </div>
+    <div class="section-title">Your Habits</div>
+    <div id="habitList"></div>
+
+    <div class="danger-section">
+      <div class="danger-title">Danger Zone</div>
+      <div class="danger-sub">This will delete all your habits, streaks and log history. This cannot be undone.</div>
+      <button class="reset-btn" onclick="resetAll()">Reset everything</button>
     </div>
+  </div>
 
-    <button class="google-btn" onclick="handleGoogleSignIn()">
-      <svg class="google-icon" viewBox="0 0 24 24">
-        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-      </svg>
-      Continue with Google
-    </button>
-
-    <button class="skip-btn" onclick="skipSignIn()">
-      I'll sign in later
-    </button>
-
-    <div class="status" id="status">Signing in...</div>
-    <div class="error" id="error"></div>
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="window.location.href='home.html'">
+      <div class="nav-icon">🏠</div>
+      Today
+    </div>
+    <div class="nav-item" onclick="window.location.href='log.html'">
+      <div class="nav-icon">📓</div>
+      Log
+    </div>
+    <div class="nav-item active">
+      <div class="nav-icon">⚙️</div>
+      Settings
+    </div>
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -145,26 +337,33 @@
   <script src="firebase.js"></script>
 
   <script>
+    var habits = JSON.parse(localStorage.getItem('habits') || '[]');
+
+    // Check auth state
     auth.onAuthStateChanged(function(user) {
       if (user) {
-        window.location.href = 'home.html';
+        document.getElementById('signedOutView').style.display = 'none';
+        document.getElementById('signedInView').style.display = 'block';
+        document.getElementById('accountName').textContent = localStorage.getItem('username') || user.displayName || 'User';
+        document.getElementById('accountEmail').textContent = user.email;
+        if (user.photoURL) {
+          document.getElementById('avatarContainer').innerHTML = '<img src="' + user.photoURL + '" />';
+        }
+      } else {
+        document.getElementById('signedOutView').style.display = 'block';
+        document.getElementById('signedInView').style.display = 'none';
       }
     });
 
-    function handleGoogleSignIn() {
-      var status = document.getElementById('status');
-      var error = document.getElementById('error');
-      status.style.display = 'block';
-      error.style.display = 'none';
-
+    function handleSignIn() {
       signInWithGoogle().then(function(result) {
         var user = result.user;
         var username = localStorage.getItem('username') || user.displayName || 'User';
+        localStorage.removeItem('skippedSignIn');
         return saveUserData(user.uid, {
           username: username,
           email: user.email,
-          photoURL: user.photoURL,
-          createdAt: new Date().toISOString()
+          photoURL: user.photoURL
         });
       }).then(function() {
         var user = getCurrentUser();
@@ -172,20 +371,98 @@
         if (habits.length > 0) {
           return saveHabits(user.uid, habits);
         }
-      }).then(function() {
-        localStorage.removeItem('skippedSignIn');
-        window.location.href = 'home.html';
       }).catch(function(err) {
-        status.style.display = 'none';
-        error.style.display = 'block';
-        error.textContent = 'Error signing in: ' + err.message;
+        alert('Error signing in: ' + err.message);
       });
     }
 
-    function skipSignIn() {
-      localStorage.setItem('skippedSignIn', 'true');
-      window.location.href = 'home.html';
+    function handleSignOut() {
+      if (!confirm('Are you sure you want to sign out?')) return;
+      signOut().then(function() {
+        localStorage.setItem('skippedSignIn', 'true');
+      });
     }
+
+    function renderHabits() {
+      var list = document.getElementById('habitList');
+      list.innerHTML = '';
+
+      if (habits.length === 0) {
+        list.innerHTML = '<div style="color:#555; text-align:center; padding:2rem;">No habits yet.</div>';
+        return;
+      }
+
+      for (var i = 0; i < habits.length; i++) {
+        var habit = habits[i];
+        var card = document.createElement('div');
+        card.className = 'habit-card';
+        card.innerHTML =
+          '<div class="habit-label">Habit ' + (i + 1) + '</div>' +
+          '<div class="habit-name">' + habit.name + '</div>' +
+          '<div class="habit-streak">🔥 ' + habit.streak + ' day streak</div>' +
+          '<input type="text" id="name-' + i + '" value="' + habit.name + '" placeholder="Habit name" />' +
+          '<textarea id="reason-' + i + '" placeholder="Your reason for quitting">' + habit.reason + '</textarea>' +
+          '<div class="streak-row">' +
+            '<label>Fix streak:</label>' +
+            '<input type="number" id="streak-' + i + '" value="' + habit.streak + '" min="0" />' +
+            '<span>days</span>' +
+          '</div>' +
+          '<button class="save-btn" onclick="saveHabit(' + i + ')">Save changes</button>' +
+          '<button class="delete-btn" onclick="deleteHabit(' + i + ')">Delete this habit</button>' +
+          '<div class="saved-msg" id="saved-' + i + '">✓ Saved</div>';
+        list.appendChild(card);
+      }
+    }
+
+    function saveHabit(index) {
+      var name = document.getElementById('name-' + index).value.trim();
+      var reason = document.getElementById('reason-' + index).value.trim();
+      var streakVal = parseInt(document.getElementById('streak-' + index).value);
+
+      if (!name || !reason) {
+        alert('Please fill in both the habit name and reason.');
+        return;
+      }
+
+      habits[index].name = name;
+      habits[index].reason = reason;
+      if (!isNaN(streakVal) && streakVal >= 0) {
+        habits[index].streak = streakVal;
+      }
+
+      localStorage.setItem('habits', JSON.stringify(habits));
+
+      var user = getCurrentUser();
+      if (user) saveHabits(user.uid, habits);
+
+      var msg = document.getElementById('saved-' + index);
+      msg.style.display = 'block';
+      setTimeout(function() {
+        msg.style.display = 'none';
+        renderHabits();
+      }, 1500);
+    }
+
+    function deleteHabit(index) {
+      if (!confirm('Delete "' + habits[index].name + '"? Your streak will be lost.')) return;
+      habits.splice(index, 1);
+      localStorage.setItem('habits', JSON.stringify(habits));
+      var user = getCurrentUser();
+      if (user) saveHabits(user.uid, habits);
+      renderHabits();
+    }
+
+    function resetAll() {
+      if (!confirm('Are you sure? This deletes everything and cannot be undone.')) return;
+      var user = getCurrentUser();
+      if (user) {
+        db.collection('users').doc(user.uid).delete();
+      }
+      localStorage.clear();
+      window.location.href = 'index.html';
+    }
+
+    renderHabits();
   </script>
 </body>
 </html>
