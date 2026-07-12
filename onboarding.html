@@ -27,10 +27,7 @@
     .slide { display: none; }
     .slide.active { display: block; }
 
-    .icon {
-      font-size: 72px;
-      margin-bottom: 1.5rem;
-    }
+    .icon { font-size: 72px; margin-bottom: 1.5rem; }
 
     .slide-title {
       font-size: 28px;
@@ -104,10 +101,7 @@
       margin-bottom: 1.25rem;
     }
 
-    .feature-icon {
-      font-size: 24px;
-      flex-shrink: 0;
-    }
+    .feature-icon { font-size: 24px; flex-shrink: 0; }
 
     .feature-text h3 {
       font-size: 15px;
@@ -153,17 +147,21 @@
       padding: 1rem;
       color: white;
       font-size: 15px;
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
       outline: none;
       text-align: center;
       font-family: system-ui, sans-serif;
     }
 
-    .username-input:focus {
-      border-color: #6C5CE7;
-    }
-
+    .username-input:focus { border-color: #6C5CE7; }
     .username-input::placeholder { color: #555; }
+
+    .username-preview {
+      font-size: 13px;
+      color: #6C5CE7;
+      margin-bottom: 1.5rem;
+      min-height: 20px;
+    }
 
     .error {
       color: #ff6b6b;
@@ -258,7 +256,7 @@
       <div class="icon">👤</div>
       <div class="slide-title">What should we <span>call you?</span></div>
       <div class="slide-text">
-        This is how you'll appear in the community tab. Pick something you're comfortable with.
+        Pick a username. A random number will be added so others can have the same name as you.
       </div>
       <input
         type="text"
@@ -266,7 +264,9 @@
         class="username-input"
         placeholder="Enter a username"
         maxlength="20"
+        oninput="updatePreview()"
       />
+      <div class="username-preview" id="usernamePreview"></div>
       <div class="error" id="usernameError">Please enter a username to continue.</div>
       <div class="dots">
         <div class="dot"></div>
@@ -282,6 +282,7 @@
   <script>
     var current = 0;
     var total = 4;
+    var generatedTag = Math.floor(1000 + Math.random() * 9000);
 
     function nextSlide() {
       document.getElementById('slide-' + current).classList.remove('active');
@@ -295,6 +296,16 @@
       document.getElementById('slide-3').classList.add('active');
     }
 
+    function updatePreview() {
+      var val = document.getElementById('usernameInput').value.trim();
+      var preview = document.getElementById('usernamePreview');
+      if (val) {
+        preview.textContent = 'Your display name: ' + val + '#' + generatedTag;
+      } else {
+        preview.textContent = '';
+      }
+    }
+
     function finish() {
       var val = document.getElementById('usernameInput').value.trim();
       var error = document.getElementById('usernameError');
@@ -305,7 +316,10 @@
       }
 
       error.style.display = 'none';
+
       localStorage.setItem('username', val);
+      localStorage.setItem('usertag', generatedTag);
+      localStorage.setItem('displayName', val + '#' + generatedTag);
       localStorage.setItem('onboarded', 'true');
       window.location.href = 'index.html';
     }
