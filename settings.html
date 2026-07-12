@@ -221,6 +221,7 @@
       font-weight: 600;
       cursor: pointer;
       margin-bottom: 0.5rem;
+      margin-top: 1rem;
     }
 
     .delete-btn {
@@ -317,8 +318,27 @@
 
     <div class="section-title">Account</div>
     <div class="account-card">
+
+      <!-- Not signed in -->
       <div id="signedOutView">
-        <div style="font-size:14px; color:#888; margin-bottom:1rem;">
+        <div class="account-info">
+          <div class="account-avatar">👤</div>
+          <div>
+            <div class="account-name" id="localDisplayName"></div>
+            <div class="account-email">Not signed in</div>
+          </div>
+        </div>
+
+        <div class="username-section">
+          <div class="username-label">Change username</div>
+          <div class="username-row">
+            <input type="text" id="newUsernameLocal" placeholder="New username" maxlength="20" />
+            <button class="username-save-btn" onclick="changeUsernameLocal()">Save</button>
+          </div>
+          <div class="username-msg" id="usernameMsgLocal"></div>
+        </div>
+
+        <div style="font-size:13px; color:#888; margin-top:1rem; margin-bottom:1rem;">
           Sign in to save your data across devices and join accountability groups.
         </div>
         <button class="google-btn" onclick="handleSignIn()">
@@ -332,6 +352,7 @@
         </button>
       </div>
 
+      <!-- Signed in -->
       <div id="signedInView" style="display:none;">
         <div class="account-info">
           <div class="account-avatar" id="avatarContainer">👤</div>
@@ -351,8 +372,9 @@
           <div class="username-msg" id="usernameMsg"></div>
         </div>
 
-        <button class="signout-btn" style="margin-top:1rem;" onclick="handleSignOut()">Sign out</button>
+        <button class="signout-btn" onclick="handleSignOut()">Sign out</button>
       </div>
+
     </div>
 
     <div class="section-title">Your Habits</div>
@@ -387,6 +409,37 @@
 
   <script>
     var habits = JSON.parse(localStorage.getItem('habits') || '[]');
+
+    // Show local username for non signed in users
+    var localDisplay = localStorage.getItem('displayName') || localStorage.getItem('username') || 'No username set';
+    var localDisplayEl = document.getElementById('localDisplayName');
+    if (localDisplayEl) localDisplayEl.textContent = localDisplay;
+
+    function changeUsernameLocal() {
+      var newName = document.getElementById('newUsernameLocal').value.trim();
+      var msg = document.getElementById('usernameMsgLocal');
+
+      if (!newName) {
+        msg.className = 'username-msg error';
+        msg.style.display = 'block';
+        msg.textContent = 'Please enter a username.';
+        return;
+      }
+
+      var tag = localStorage.getItem('usertag') || Math.floor(1000 + Math.random() * 9000);
+      var newDisplayName = newName + '#' + tag;
+
+      localStorage.setItem('username', newName);
+      localStorage.setItem('usertag', tag);
+      localStorage.setItem('displayName', newDisplayName);
+
+      document.getElementById('localDisplayName').textContent = newDisplayName;
+      document.getElementById('newUsernameLocal').value = '';
+
+      msg.className = 'username-msg success';
+      msg.style.display = 'block';
+      msg.textContent = 'Username changed to ' + newDisplayName;
+    }
 
     auth.onAuthStateChanged(function(user) {
       if (user) {
@@ -428,12 +481,11 @@
       msg.textContent = 'Checking availability...';
       msg.style.color = '#888';
 
-      // Check if username already exists in Firestore
       db.collection('usernames').doc(newName.toLowerCase()).get().then(function(doc) {
         if (doc.exists && doc.data().uid !== user.uid) {
           msg.className = 'username-msg error';
           msg.style.display = 'block';
-          msg.textContent = 'Username "' + newName + '" is already taken. Try another.';
+          msg.textContent = '"' + newName + '" is already taken. Try another.';
           return;
         }
 
@@ -441,18 +493,15 @@
         var tag = localStorage.getItem('usertag');
         var newDisplayName = newName + '#' + tag;
 
-        // Remove old username reservation
         if (oldUsername) {
           db.collection('usernames').doc(oldUsername.toLowerCase()).delete();
         }
 
-        // Reserve new username
         db.collection('usernames').doc(newName.toLowerCase()).set({
           uid: user.uid,
           displayName: newDisplayName
         });
 
-        // Update user record
         saveUserData(user.uid, {
           username: newName,
           displayName: newDisplayName
@@ -467,7 +516,7 @@
 
         msg.className = 'username-msg success';
         msg.style.display = 'block';
-        msg.textContent = '✓ Username changed to ' + newDisplayName;
+        msg.textContent = 'Username changed to ' + newDisplayName;
       }).catch(function(err) {
         msg.className = 'username-msg error';
         msg.style.display = 'block';
