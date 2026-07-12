@@ -68,6 +68,61 @@
 
     .account-name { font-size: 16px; font-weight: 700; }
     .account-email { font-size: 13px; color: #888; margin-top: 0.25rem; }
+    .account-tag { font-size: 13px; color: #6C5CE7; margin-top: 0.25rem; }
+
+    .username-section {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #2a2a2a;
+    }
+
+    .username-label {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 0.5rem;
+    }
+
+    .username-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .username-row input {
+      flex: 1;
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      padding: 0.6rem 0.75rem;
+      color: white;
+      font-size: 14px;
+      outline: none;
+      font-family: system-ui, sans-serif;
+    }
+
+    .username-row input:focus { border-color: #6C5CE7; }
+    .username-row input::placeholder { color: #555; }
+
+    .username-save-btn {
+      background: #6C5CE7;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 0.6rem 1rem;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .username-msg {
+      font-size: 12px;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .username-msg.success { color: #1D9E75; }
+    .username-msg.error { color: #ff6b6b; }
 
     .habit-card {
       background: #1a1a1a;
@@ -283,9 +338,20 @@
           <div>
             <div class="account-name" id="accountName">Loading...</div>
             <div class="account-email" id="accountEmail"></div>
+            <div class="account-tag" id="accountTag"></div>
           </div>
         </div>
-        <button class="signout-btn" onclick="handleSignOut()">Sign out</button>
+
+        <div class="username-section">
+          <div class="username-label">Change username</div>
+          <div class="username-row">
+            <input type="text" id="newUsername" placeholder="New username" maxlength="20" />
+            <button class="username-save-btn" onclick="changeUsername()">Save</button>
+          </div>
+          <div class="username-msg" id="usernameMsg"></div>
+        </div>
+
+        <button class="signout-btn" style="margin-top:1rem;" onclick="handleSignOut()">Sign out</button>
       </div>
     </div>
 
@@ -328,6 +394,7 @@
         document.getElementById('signedInView').style.display = 'block';
         document.getElementById('accountName').textContent = localStorage.getItem('username') || user.displayName || 'User';
         document.getElementById('accountEmail').textContent = user.email;
+        document.getElementById('accountTag').textContent = localStorage.getItem('displayName') || '';
         if (user.photoURL) {
           document.getElementById('avatarContainer').innerHTML = '<img src="' + user.photoURL + '" />';
         }
@@ -337,6 +404,77 @@
       }
     });
 
+    function changeUsername() {
+      var newName = document.getElementById('newUsername').value.trim();
+      var msg = document.getElementById('usernameMsg');
+
+      if (!newName) {
+        msg.className = 'username-msg error';
+        msg.style.display = 'block';
+        msg.textContent = 'Please enter a username.';
+        return;
+      }
+
+      var user = getCurrentUser();
+      if (!user) {
+        msg.className = 'username-msg error';
+        msg.style.display = 'block';
+        msg.textContent = 'You must be signed in to change your username.';
+        return;
+      }
+
+      msg.className = 'username-msg';
+      msg.style.display = 'block';
+      msg.textContent = 'Checking availability...';
+      msg.style.color = '#888';
+
+      // Check if username already exists in Firestore
+      db.collection('usernames').doc(newName.toLowerCase()).get().then(function(doc) {
+        if (doc.exists && doc.data().uid !== user.uid) {
+          msg.className = 'username-msg error';
+          msg.style.display = 'block';
+          msg.textContent = 'Username "' + newName + '" is already taken. Try another.';
+          return;
+        }
+
+        var oldUsername = localStorage.getItem('username');
+        var tag = localStorage.getItem('usertag');
+        var newDisplayName = newName + '#' + tag;
+
+        // Remove old username reservation
+        if (oldUsername) {
+          db.collection('usernames').doc(oldUsername.toLowerCase()).delete();
+        }
+
+        // Reserve new username
+        db.collection('usernames').doc(newName.toLowerCase()).set({
+          uid: user.uid,
+          displayName: newDisplayName
+        });
+
+        // Update user record
+        saveUserData(user.uid, {
+          username: newName,
+          displayName: newDisplayName
+        });
+
+        localStorage.setItem('username', newName);
+        localStorage.setItem('displayName', newDisplayName);
+
+        document.getElementById('accountName').textContent = newName;
+        document.getElementById('accountTag').textContent = newDisplayName;
+        document.getElementById('newUsername').value = '';
+
+        msg.className = 'username-msg success';
+        msg.style.display = 'block';
+        msg.textContent = '✓ Username changed to ' + newDisplayName;
+      }).catch(function(err) {
+        msg.className = 'username-msg error';
+        msg.style.display = 'block';
+        msg.textContent = 'Error: ' + err.message;
+      });
+    }
+
     function handleSignIn() {
       signInWithGoogle().then(function(result) {
         var user = result.user;
@@ -345,7 +483,8 @@
         return saveUserData(user.uid, {
           username: username,
           email: user.email,
-          photoURL: user.photoURL
+          photoURL: user.photoURL,
+          displayName: localStorage.getItem('displayName') || username
         });
       }).then(function() {
         var user = getCurrentUser();
