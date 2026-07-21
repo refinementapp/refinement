@@ -88,20 +88,53 @@
 
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="firebase.js"></script>
 
   <script>
-    setTimeout(function() {
+    function routeUser() {
       if (!localStorage.getItem('onboarded')) {
+        var localHabits = JSON.parse(localStorage.getItem('habits') || '[]');
+        if (localHabits.length > 0) {
+          localStorage.setItem('onboarded', 'true');
+          window.location.href = 'home.html';
+          return;
+        }
         window.location.href = 'onboarding.html';
-      } else if (!localStorage.getItem('habits') || JSON.parse(localStorage.getItem('habits')).length === 0) {
-        window.location.href = 'index.html';
-      } else if (!localStorage.getItem('skippedSignIn') && !firebase.auth().currentUser) {
-        window.location.href = 'signin.html';
-      } else {
-        window.location.href = 'home.html';
+        return;
       }
-    }, 2000);
+
+      var habits = JSON.parse(localStorage.getItem('habits') || '[]');
+
+      if (habits.length > 0) {
+        window.location.href = 'home.html';
+        return;
+      }
+
+      // No local habits — check if signed in and has cloud habits
+      auth.onAuthStateChanged(function(user) {
+        if (user) {
+          db.collection('users').doc(user.uid).get().then(function(doc) {
+            if (doc.exists && doc.data().habits && doc.data().habits.length > 0) {
+              localStorage.setItem('habits', JSON.stringify(doc.data().habits));
+              if (doc.data().username) localStorage.setItem('username', doc.data().username);
+              if (doc.data().displayName) localStorage.setItem('displayName', doc.data().displayName);
+              window.location.href = 'home.html';
+            } else {
+              window.location.href = 'index.html';
+            }
+          }).catch(function() {
+            window.location.href = 'index.html';
+          });
+        } else if (!localStorage.getItem('skippedSignIn')) {
+          window.location.href = 'signin.html';
+        } else {
+          window.location.href = 'index.html';
+        }
+      });
+    }
+
+    setTimeout(routeUser, 2000);
   </script>
 </body>
 </html>
